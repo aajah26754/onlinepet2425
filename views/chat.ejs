@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatroom</title>
+    <style>
+        body {
+            color: #e0e0e0;
+        }
+
+        #messages {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #messages li {
+            padding: 8px;
+            margin: 5px 0;
+            color: #e0e0e0;
+        }
+
+        #form {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        #input {
+            flex: 1;
+            padding: 8px;
+            color: #e0e0e0;
+            border: 1px solid #000000;
+        }
+
+        #submitButton {
+            padding: 8px;
+            color: #e0e0e0;
+            border: none;
+            cursor: pointer;
+        }
+
+        #submitButton:hover {
+            background-color: #14013e;
+        }
+
+        #roomList {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        #roomList button {
+            padding: 8px;
+            background-color: #14013e;
+            color: #e0e0e0;
+            border: none;
+            cursor: pointer;
+            margin: 5px;
+            padding: 8px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h2>Welcome, <%= user %>!</h2>
+    <h2>Chat Messages:</h2>
+    <ul id="messages"></ul>
+    <div id="form">
+        <input id="input" type="text" placeholder="Type messages here">
+        <button id="submitButton">Submit</button>
+    </div>
+</body>
+<script src="https://cdn.socket.io/4.0.1/socket.io.js"></script>
+<script>
+    const userName = '<%= user %>';
+
+    const socket = io.connect();
+    const input = document.getElementById('input');
+    const submitButton = document.getElementById('submitButton');
+    const messages = document.getElementById('messages');
+
+    submitButton.addEventListener('click', function () {
+        const message = input.value.trim(); {
+            if (message) {
+                socket.emit('chat message', message);
+                input.value = '';
+            } 
+        }
+    });
+
+    input.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            submitButton.click();
+        }
+    });
+
+    socket.on('chat message', function (data) {
+        const messageElement = document.createElement('li');
+        messageElement.textContent = `[${data.time}] ${data.user}: ${data.message}`;
+        messages.appendChild(messageElement);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+</script>
+
+</html>
