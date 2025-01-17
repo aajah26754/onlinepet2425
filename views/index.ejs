@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+    }
+
+    #hungerBarContainer {
+        width: 300px;
+        height: 30px;
+        border: 1px solid #000;
+        margin-bottom: 20px;
+    }
+
+    #hungerBar {
+        height: 100%;
+        background-color: #ffd3f9;
+        width: 100%;
+    }
+
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        background-color: #ffd3f9;
+        color: rgb(0, 0, 0);
+    }
+
+    button:disabled {
+        background-color: grey;
+    }
+</style>
+
+<body>
+    <h1>Hey, I'm Beyonce</h1>
+    <img src="../img/dog.png">
+    <br>
+    <div id="hungerBarContainer">
+        <div id="hungerBar"></div>
+    </div>
+
+    <button id="feedButton">Feed</button>
+    <br>
+    <button><a href="/logout">LogOut</a></button>
+
+
+</html>
+
+
+<script>
+    const hungerBar = document.getElementById('hungerBar');
+    const feedButton = document.getElementById('feedButton');
+    const funBar = document.getElementById('funBar');
+    const funButton = document.getElementById('funButton');
+    const sleepBar = document.getElementById('sleepBar');
+    const sleepButton = document.getElementById('sleepButton');
+
+
+    // Updates hunger bar 
+    function updateHungerBar(hunger) {
+        hungerBar.style.width = hunger + '%';
+    }
+
+    async function fetchHunger() {
+        const response = await fetch('/hunger');
+        const data = await response.json();
+        updateHungerBar(data.hunger);
+        feedButton.disabled = data.hunger >= 100;
+    }
+
+    // allows user to feed the pet
+    feedButton.addEventListener('click', async () => {
+        await fetch('/feed', { method: 'POST' });
+        fetchHunger();
+    });
+
+    setInterval(fetchHunger, 1000);
+    fetchHunger(); 
+
+
+</script>
+</body>
+
+</html>
