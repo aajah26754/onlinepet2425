@@ -3,7 +3,7 @@ const FBJS_URL = 'https://formbar.yorktechapps.com';
 const THIS_URL = 'http://localhost:3000/';
 const jwt = require('jsonwebtoken');
 
-const db = new sqlite3.Database('./data/database.db', (err) => {
+const db = new sqlite3.Database('./data/mydatabase.db', (err) => {
   if (err) {
     return console.error(err.message);
   }
