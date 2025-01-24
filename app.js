@@ -39,10 +39,13 @@ app.post('/login', routes.postLogin);
 
 app.get('/logout', routes.logout);
 
+app.get('/changes', routes.changes)
+
+
 // decrease hunger level by 3 every 2 seconds
 let hungerLevel = 100;
-const hungerDecrementAmount = 3;
-const hungerDecrementInterval = 2000;
+const DecrementAmount = 3;
+const DecrementInterval = 2000;
 
 app.use(express.static('public'));
 
@@ -57,9 +60,29 @@ app.post('/feed', (req, res) => {
 
 setInterval(() => {
     if (hungerLevel > 0) {
-        hungerLevel -= hungerDecrementAmount;
+        hungerLevel -= DecrementAmount;
     }
-}, hungerDecrementInterval);
+}, DecrementInterval);
+
+let sleepLevel = 100;
+
+
+app.use(express.static('public'));
+
+app.get('/sleep', (req, res) => {
+    res.json({ sleep: sleepLevel });
+});
+
+app.post('/sleep', (req, res) => {
+    sleepLevel = 100;
+    res.json({ sleep: sleepLevel });
+});
+
+setInterval(() => {
+    if (sleepLevel > 0) {
+        sleepLevel -= DecrementAmount;
+    }
+}, DecrementInterval);
 
 
 app.get('/', (req, res) => {

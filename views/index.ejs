@@ -24,8 +24,19 @@
         height: 100%;
         background-color: #ffd3f9;
         width: 100%;
+    }#sleepBarContainer {
+        width: 300px;
+        height: 30px;
+        border: 1px solid #000;
+        margin-bottom: 20px;
     }
-    button {
+    #sleepBar {
+        height: 100%;
+        color: #2a8eec;
+        width: 100%;
+    }
+
+    #feedButton {
         padding: 10px 20px;
         font-size: 16px;
         cursor: pointer;
@@ -33,22 +44,45 @@
         background-color: #ffd3f9;
         color: rgb(0, 0, 0);
     }
-    button:disabled {
+    #sleepButton {
+        padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        background-color: #8fc1f0;
+        color: rgb(0, 0, 0);
+    }
+    
+    button {padding: 10px 20px;
+        font-size: 16px;
+        cursor: pointer;
+        border: none;
+        background-color: #f9b4ff;
+        color: rgb(0, 0, 0);}
+    #feedButton:disabled {
+        background-color: grey;
+    }
+
+    #sleepButton:disabled {
         background-color: grey;
     }
 </style>
 
 <body>
-    <h1>Hey, I'm Beyonce</h1>
+    <h1>Hey, I'm <%= petName %></h1>
     <img src="../img/dog.png">
     <br>
     <div id="hungerBarContainer">
         <div id="hungerBar"></div>
     </div>
+    <div id="sleepBarContainer"></div>
+        <div id="sleepBar"></div>
+    </div>
 
-    <button id="feedButton">Feed</button>
-    <br>
-    <button><a href="/logout">LogOut</a></button>
+    <button id="feedButton">Feed</button> <br>
+    <button id="sleepButton">Sleep</button> <br>
+    <button><a href="/logout">LogOut</a></button> <br>
+    <button><a href="/changes">Change Stuff about your pets</a></button>
 
 
 </html>
@@ -78,6 +112,23 @@
     });
     setInterval(fetchHunger, 1000);
     fetchHunger(); 
+
+    // Updates sleep bar || takes longer than hunger
+    function updatesleepBar(sleep) {
+        sleepBar.style.width = sleep + '%';
+    }
+    async function fetchsleep() {
+        const response = await fetch('/sleep');
+        const data = await response.json();
+        updatesleepBar(data.sleep);
+        sleepButton.disabled = data.sleep >= 100;
+    }
+    sleepButton.addEventListener('click', async () => {
+        await fetch('/sleep', { method: 'POST' });
+        fetchsleep();
+    });
+    setInterval(fetchsleep, 1000);
+    fetchsleep();
 </script>
 </body>
 

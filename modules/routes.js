@@ -8,7 +8,7 @@ const db = new sqlite3.Database('./data/mydatabase.db', (err) => {
 });
 
 function index(req, res) {
-  res.render('index', { user: req.session.user });
+  res.render('index', { petName : "Beyonce" });
 }
 
 function login(req, res) {
@@ -72,6 +72,9 @@ function logout(req, res) {
     res.redirect('/')
 }
 
+function changes(req,res) {
+  res.render('changes')
+} 
 
 function isAuthenticated(req, res, next) {
   if (req.session.user) next() 
@@ -82,6 +85,7 @@ module.exports = {
   login,
   postLogin,
   logout,
-  isAuthenticated
+  isAuthenticated,
+  changes,
 }
 
