@@ -1,9 +1,6 @@
 const sqlite3 = require('sqlite3').verbose();
-const FBJS_URL = 'https://formbar.yorktechapps.com';
-const THIS_URL = 'http://localhost:3000/';
-const jwt = require('jsonwebtoken');
 
-const db = new sqlite3.Database('./data/database.db', (err) => {
+const db = new sqlite3.Database('./data/mydatabase.db', (err) => {
   if (err) {
     return console.error(err.message);
   }
@@ -13,26 +10,9 @@ const db = new sqlite3.Database('./data/database.db', (err) => {
 function index(req, res) {
   res.render('index', { user: req.session.user });
 }
-function chat(req, res, next) {
-  isAuthenticated(req, res, () => {
-    res.render('chat', { user: req.session.user });
-  });
-}
 
 function login(req, res) {
   res.render('login');
-}
-
-function loginFormbar(req, res) {
-  console.log(req.query.token)
-  if (req.query.token) {
-    let tokenData = jwt.decode(req.query.token)
-    req.session.token = tokenData
-    req.session.user = tokenData.username
-    res.redirect('/')
-  } else {
-    res.redirect(`${FBJS_URL}/oauth?redirectURL=${THIS_URL}`)
-  }
 }
 
 function postLogin(req, res) {
@@ -57,8 +37,7 @@ function postLogin(req, res) {
               if (err) {
                 res.send("Database errpr:\n" + err)
               } else {
-                res.redirect('/chat')
-
+                res.redirect('/index')
               }
             })
           }
@@ -74,7 +53,7 @@ function postLogin(req, res) {
 
             if (row.password === hashedPassword) {
               req.session.user = req.body.user
-              res.redirect("/chat")
+              res.redirect("/index")
             } else {
               res.send("Incorrect Password")
             }
@@ -89,7 +68,8 @@ function postLogin(req, res) {
 }
 
 function logout(req, res) {
-  res.render('logout');
+  req.session.destroy();
+    res.redirect('/')
 }
 
 
@@ -99,9 +79,7 @@ function isAuthenticated(req, res, next) {
 }
 module.exports = {
   index,
-  chat,
   login,
-  loginFormbar,
   postLogin,
   logout,
   isAuthenticated

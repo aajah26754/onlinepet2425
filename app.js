@@ -6,6 +6,8 @@ const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const sqlite3 = require('sqlite3');
 const port = 3000;
+const routes = require('./modules/routes');
+const socket = require('./modules/socket');
 
 // create a session middleware
 const sessionMiddleware = session({
@@ -29,29 +31,13 @@ function isAuthenticated(req, res, next) {
     };
 }
 
-app.get('/', isAuthenticated, (req, res) => {
-    res.render('index');
-});
+app.get('/', routes.login);
 
-app.get('/login', (req, res) => {
-    res.render('login')
-});
+app.get('/index', routes.index);
 
-app.post('/login', (req, res) => {
-    if (req.body.username) {
-        req.session.user = req.body.username;
-        res.redirect('/')
-    }
-})
+app.post('/login', routes.postLogin);
 
-app.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/login')
-})
-
-app.get('/chat', isAuthenticated, (req, res) => {
-    res.render('chat')
-});
+app.get('/logout', routes.logout);
 
 // decrease hunger level by 3 every 2 seconds
 let hungerLevel = 100;
