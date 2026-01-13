@@ -6,8 +6,6 @@ const session = require('express-session');
 const SQLiteStore = require('connect-sqlite3')(session);
 const sqlite3 = require('sqlite3');
 const port = 3000;
-const routes = require('./modules/routes');
-const socket = require('./modules/socket');
 
 // create a session middleware
 const sessionMiddleware = session({
@@ -31,21 +29,41 @@ function isAuthenticated(req, res, next) {
     };
 }
 
-app.get('/', routes.login);
+app.get('/', isAuthenticated, (req, res) => {
+    res.render('index');
+});
 
-app.get('/index', routes.index);
+app.get('/login', (req, res) => {
+    res.render('login')
+});
 
-app.post('/login', routes.postLogin);
+app.post('/login', (req, res) => {
+    if (req.body.username) {
+        req.session.user = req.body.username;
+        res.redirect('/')
+    }
+})
 
-app.get('/logout', routes.logout);
+app.get('/logout', (req, res) => {
+    req.session.destroy();
+    res.redirect('/login')
+})
 
-app.get('/changes', routes.changes)
+app.get('/chat', isAuthenticated, (req, res) => {
+    res.render('chat')
+});
 
+app.get('/routes', (req, res) => {
+    res.render('/routes')
+});
 
+app.get('/socket', (req, res) => {
+    res.render('/routes')
+});
 // decrease hunger level by 3 every 2 seconds
 let hungerLevel = 100;
-const DecrementAmount = 3;
-const DecrementInterval = 2000;
+const hungerDecrementAmount = 3;
+const hungerDecrementInterval = 2000;
 
 app.use(express.static('public'));
 
@@ -60,29 +78,9 @@ app.post('/feed', (req, res) => {
 
 setInterval(() => {
     if (hungerLevel > 0) {
-        hungerLevel -= DecrementAmount;
+        hungerLevel -= hungerDecrementAmount;
     }
-}, DecrementInterval);
-
-let sleepLevel = 100;
-
-
-app.use(express.static('public'));
-
-app.get('/sleep', (req, res) => {
-    res.json({ sleep: sleepLevel });
-});
-
-app.post('/sleep', (req, res) => {
-    sleepLevel = 100;
-    res.json({ sleep: sleepLevel });
-});
-
-setInterval(() => {
-    if (sleepLevel > 0) {
-        sleepLevel -= DecrementAmount;
-    }
-}, DecrementInterval);
+}, hungerDecrementInterval);
 
 
 app.get('/', (req, res) => {
